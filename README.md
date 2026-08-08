@@ -48,6 +48,46 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 
 Render re-déploie automatiquement à chaque `git push` sur la branche `main` (option `autoDeploy` activée).
 
+## ⚡ Service Proxy intégré (`/proxy`)
+
+Le repo contient un **deuxième service** : un proxy HTTP/HTTPS authentifié
+(Node.js pur, **zéro dépendance**) qui fait sortir votre trafic navigateur
+par le serveur Render.
+
+- La section **« Accès Proxy »** de la page (`#acces-proxy`) génère des
+  identifiants (token valide 1 h) via `GET /generate`.
+- Le proxy accepte `CONNECT` (tunnel TCP) + requêtes HTTP absolues, avec
+  authentification Basic sur chaque tunnel.
+- Sécurité intégrée : tokens à durée de vie limitée, blocage SMTP, IP
+  privées/réservées et réseau interne `.internal`, limite de génération par IP.
+
+### Variables d'environnement du proxy
+
+| Variable | Rôle |
+|---|---|
+| `PROXY_ADMIN_KEY` | Clé requise pour `/generate` (à définir dans le dashboard Render — fortement conseillé) |
+| `PROXY_TOKEN_TTL_MS` | Durée de vie d'un token (défaut : 1 h) |
+
+### ⚠️ Limites honnêtes
+
+- **Proxy HTTP/HTTPS uniquement** — pas d'UDP (jeux, appels VoIP non routés),
+  ce n'est pas un vrai VPN système.
+- Render **free** : le service dort après 15 min d'inactivité (30-60 s de
+  réveil), 100 Go/mois de bande passante.
+- L'IP visible est une **IP de datacenter** (certains sites la bloquent).
+- **Usage personnel et authentifié uniquement** — un proxy ouvert exposé au
+  public peut entraîner la suspension du compte (acceptable use des PaaS).
+  Pour un service commercial, utilisez un VPS (Hetzner ~4 €/mois).
+
+### Test en local
+
+```bash
+cd proxy
+PORT=3001 node server.js
+curl -s http://127.0.0.1:3001/generate        # récupérer un token
+curl -x http://127.0.0.1:3001 -U tunnel:TOKEN https://api.ipify.org
+```
+
 ## Scripts
 
 ```bash

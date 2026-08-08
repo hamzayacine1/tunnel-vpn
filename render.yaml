@@ -1,13 +1,31 @@
 # Render Blueprint — Tunnel VPN
-# Déploiement automatique sur Render à partir de ce repository.
-# Voir le README pour les instructions complètes.
+# Deux services :
+#   1. tunnel-vpn      → le site (Next.js)
+#   2. tunnel-vpn-proxy → le proxy authentifié (Node.js pur, zéro dépendance)
 
 services:
   - type: web
     name: tunnel-vpn
     runtime: node
+    rootDir: .
     plan: free
     buildCommand: npm run build
     startCommand: npm start
     autoDeploy: true
     healthCheckPath: /
+    envVars:
+      - key: NEXT_PUBLIC_PROXY_URL
+        value: https://tunnel-vpn-proxy.onrender.com
+
+  - type: web
+    name: tunnel-vpn-proxy
+    runtime: node
+    rootDir: proxy
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    autoDeploy: true
+    healthCheckPath: /healthz
+    # envVars:
+    #   - key: PROXY_ADMIN_KEY       # ← à définir dans le dashboard Render (fortement conseillé)
+    #     sync: false

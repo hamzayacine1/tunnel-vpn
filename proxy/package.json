@@ -1,0 +1,13 @@
+{
+  "name": "tunnel-vpn-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proxy HTTP/HTTPS authentifié (CONNECT) — hébergé sur Render, aucun serveur VPS requis.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
