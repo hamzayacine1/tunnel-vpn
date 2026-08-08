@@ -111,6 +111,24 @@ function checkAuth(req) {
   return info;
 }
 
+// ─── Endpoint : fichier PAC (config automatique pour tout l'appareil) ─
+function handlePac(req, res) {
+  const fullHost = req.headers.host || "tunnel-vpn-proxy.onrender.com";
+  const hostname = String(fullHost).split(":")[0];
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])/.test(hostname);
+  const protocol = isLocal ? "http" : "https";
+  const port = isLocal ? PORT : 443;
+
+  const pac = `function FindProxyForURL(url, host) {
+  if (host === "${hostname}" || host === "localhost" || host === "127.0.0.1" || host === "::1") return "DIRECT";
+  return "HTTPS ${hostname}:${port}; DIRECT";
+}`;
+
+  res.setHeader("Content-Type", "application/x-ns-proxy-autoconfig");
+  res.setHeader("Cache-Control", "no-store");
+  res.end(pac);
+}
+
 // ─── Endpoint : génération d'accès ────────────────────────────────
 function handleGenerate(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -150,6 +168,7 @@ function handleGenerate(req, res) {
       username: "tunnel",
       password: token,
       expiresInMinutes: Math.round(TOKEN_TTL_MS / 60000),
+      pacUrl: `${protocol}://${host}/pac`,
       curl: `curl -x ${protocol}://tunnel:${token}@${host} https://api.ipify.org`,
     })
   );
@@ -327,6 +346,8 @@ const server = http.createServer((req, res) => {
     servePage(req, res);
   } else if (req.method === "GET" && req.url.startsWith("/generate")) {
     handleGenerate(req, res);
+  } else if (req.method === "GET" && req.url === "/pac") {
+    handlePac(req, res);
   } else if (req.method === "GET" && req.url === "/healthz") {
     res.setHeader("Content-Type", "text/plain");
     res.end("ok");

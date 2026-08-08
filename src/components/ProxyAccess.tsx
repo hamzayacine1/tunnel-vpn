@@ -14,6 +14,7 @@ type ProxyCreds = {
   username: string;
   password: string;
   expiresInMinutes: number;
+  pacUrl: string;
   curl: string;
 };
 
@@ -149,6 +150,24 @@ export default function ProxyAccess() {
                   {creds.curl}
                 </pre>
                 <CopyButton text={creds.curl} label="Copier la commande" />
+              </div>
+
+              <div className="mt-6 rounded-xl border border-white/8 bg-night-950/70 p-4">
+                <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                  ⚡ Astuce — Fichier PAC (config automatique sur tout l'appareil)
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  Collez cette URL dans les réglages proxy de Windows / macOS /
+                  Android / iOS : <b>tout l'appareil</b> (tous navigateurs, apps)
+                  passera par le proxy, sans rien configurer d'autre. Le système
+                  vous demandera vos identifiants (tunnel + mot de passe).
+                </p>
+                <div className="mt-3 flex items-center gap-3 rounded-lg border border-white/8 bg-night-950/70 p-3">
+                  <code className="flex-1 break-all font-mono text-xs text-mint-300">
+                    {creds.pacUrl}
+                  </code>
+                  <CopyButton text={creds.pacUrl} label="Copier" />
+                </div>
               </div>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">

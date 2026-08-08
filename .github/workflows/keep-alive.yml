@@ -1,0 +1,18 @@
+name: keep-alive
+# Astuce anti-sommeil : Render free met les services en veille après ~15 min
+# d'inactivité. Ce workflow ping le proxy toutes les 5 minutes → il reste
+# toujours chaud (froid en 30-60 s sinon).
+# Note : 750 h/mois de calcul offertes par service free → 24/7 = ~744 h, ça rentre.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping proxy (tunnel-vpn-proxy)
+        run: curl -fsS -m 60 -o /dev/null -w "proxy: HTTP %{http_code}\n" https://tunnel-vpn-proxy.onrender.com/healthz || echo "proxy: down (pas encore déployé ?)"
+      - name: Ping site (tunnel-vpn)
+        run: curl -fsS -m 60 -o /dev/null -w "site: HTTP %{http_code}\n" https://tunnel-vpn.onrender.com/ || echo "site: down (pas encore déployé ?)"
