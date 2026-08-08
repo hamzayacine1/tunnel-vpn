@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-night-950: #04060e;
+  --color-night-900: #080d1c;
+  --color-night-850: #0b1226;
+  --color-night-800: #101a36;
+  --color-night-700: #1b2a50;
+  --color-night-600: #2b3f6e;
+
+  --color-mint-200: #a7f3d0;
+  --color-mint-300: #6ee7b7;
+  --color-mint-400: #34d399;
+  --color-mint-500: #10b981;
+  --color-mint-600: #059669;
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-float: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-night-950 font-sans text-slate-300 antialiased;
+}
+
+::selection {
+  @apply bg-mint-500/30 text-white;
+}
+
+.text-gradient {
+  @apply bg-linear-to-r from-mint-300 via-mint-400 to-cyan-400 bg-clip-text text-transparent;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.05) 1px, transparent 1px);
+  background-size: 42px 42px;
+}

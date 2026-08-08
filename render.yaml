@@ -1,0 +1,13 @@
+# Render Blueprint — Tunnel VPN
+# Déploiement automatique sur Render à partir de ce repository.
+# Voir le README pour les instructions complètes.
+
+services:
+  - type: web
+    name: tunnel-vpn
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /
