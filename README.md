@@ -20,33 +20,48 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 
 ## 🚀 Déploiement sur Render (3 minutes)
 
+> 📖 **Guide complet pas-à-pas : [DEPLOYMENT.md](DEPLOYMENT.md)** (Render + Koyeb + anti-sommeil + dépannage).
+
 ### Option A — Blueprint (recommandé, 1 clic)
 
 1. Rendez-vous sur [render.com](https://render.com) et connectez-vous (GitHub).
 2. Cliquez sur **New +** → **Blueprint**.
 3. Sélectionnez le repository `tunnel-vpn`.
-4. Render détecte automatiquement `render.yaml` et crée le service web.
+4. Render détecte automatiquement `render.yaml` → **2 services** : le site (`tunnel-vpn`) et le proxy (`tunnel-vpn-proxy`).
 5. Cliquez sur **Apply** → l'application se build et se déploie automatiquement.
 
 ### Option B — Manuel
 
 1. Sur Render : **New +** → **Web Service**.
-2. Connectez votre compte GitHub et sélectionnez le repository `tunnel-vpn`.
+2. Connectez votre compte GitHub et sélectionnez le repository `tunnel-vpn` (rootDir `.` pour le site, `proxy` pour le proxy).
 3. Render détecte automatiquement **Next.js** et pré-remplit la configuration :
 
    | Champ | Valeur |
    |---|---|
    | Runtime | Node |
-   | Build Command | `npm run build` |
-   | Start Command | `npm start` |
+   | Root Directory | `.` (site) ou `proxy` (proxy) |
+   | Build Command | `npm run build` (site) ou `npm install --omit=dev` (proxy) |
+   | Start Command | `npm start` (site) ou `node server.js` (proxy) |
    | Plan | Free (ou Starter pour zéro mise en veille) |
 
 4. Cliquez sur **Deploy Web Service**.
 5. Une fois le déploiement terminé, vous recevez une URL du type `https://tunnel-vpn.onrender.com`.
 
+### Backup gratuit sur Koyeb (optionnel)
+
+Le repo contient un [Dockerfile](proxy/Dockerfile) pour déployer le proxy sur
+[Koyeb](https://koyeb.com) (1 service free sans expiration, région Frankfurt,
+dort après 1 h) : créez une app depuis le repo GitHub, build « Dockerfile »,
+chemin `proxy/Dockerfile`, port 3001. Détails dans [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ### Mises à jour automatiques
 
 Render re-déploie automatiquement à chaque `git push` sur la branche `main` (option `autoDeploy` activée).
+
+### Anti-sommeil (le proxy ne dort jamais)
+
+Le workflow GitHub Actions [keep-alive.yml](.github/workflows/keep-alive.yml)
+ping le site et le proxy toutes les 5 minutes (gratuit, inclus dans votre repo).
 
 ## ⚡ Service Proxy intégré (`/proxy`)
 

@@ -1,7 +1,12 @@
 name: keep-alive
 # Astuce anti-sommeil : Render free met les services en veille après ~15 min
-# d'inactivité. Ce workflow ping le proxy toutes les 5 minutes → il reste
-# toujours chaud (froid en 30-60 s sinon).
+# d'inactivité. Ce workflow ping les services toutes les 5 minutes → ils
+# restent toujours chauds (froid en 30-60 s sinon).
+#
+# Koyeb (backup) : si vous définissez la variable de dépôt KOYEB_URL
+# (Settings → Secrets and variables → Actions → Variables) avec l'URL de
+# votre service Koyeb, il sera pingé aussi (Koyeb free dort après 1 h).
+#
 # Note : 750 h/mois de calcul offertes par service free → 24/7 = ~744 h, ça rentre.
 on:
   schedule:
@@ -16,3 +21,6 @@ jobs:
         run: curl -fsS -m 60 -o /dev/null -w "proxy: HTTP %{http_code}\n" https://tunnel-vpn-proxy.onrender.com/healthz || echo "proxy: down (pas encore déployé ?)"
       - name: Ping site (tunnel-vpn)
         run: curl -fsS -m 60 -o /dev/null -w "site: HTTP %{http_code}\n" https://tunnel-vpn.onrender.com/ || echo "site: down (pas encore déployé ?)"
+      - name: Ping backup Koyeb (si KOYEB_URL défini)
+        if: vars.KOYEB_URL != ''
+        run: curl -fsS -m 60 -o /dev/null -w "koyeb: HTTP %{http_code}\n" ${{ vars.KOYEB_URL }}/healthz || echo "koyeb: down"
